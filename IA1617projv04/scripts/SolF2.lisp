@@ -77,18 +77,17 @@
   "generate all possible next states"
   (let ((lst '()))
   (dolist (el (possible-actions))
-    (setf lst (append (list (nextState st el)) lst  )))
+    (setf lst (cons  (nextState st el) lst )) )
   lst)
 	)
 
 ;;; limdepthfirstsearch 
 (defun limdepthfirstsearch (problem lim &key cutoff)
   "limited depth first search st - initial state problem - problem information lim - depth limit"
-	(let ((initNode  (make-node :state (problem-initial-state problem)) ))
-    (cond ( (funcall(problem-fn-isGoal problem) (node-state initNode)) (return-from limdepthfirstsearch (list (node-state initNode))) )
+    (cond ( (funcall(problem-fn-isGoal problem) (problem-initial-state problem)) (return-from limdepthfirstsearch (list (problem-initial-state problem))) )
             ((eq 0 lim) (return-from limdepthfirstsearch ':corte))
     )
-    (let* ( (nextSt (nextStates (node-state initNode))) (cutoff NIL) )
+    (let* ( (nextSt (funcall(problem-fn-nextStates problem) (problem-initial-state problem))) (cutoff NIL) )
 
       (dolist (st nextSt)
 
@@ -98,8 +97,8 @@
                 (result (limdepthfirstsearch child (- lim 1)) ) ) 
 
             (cond ((eq result :corte) (setf cutoff T)) 
-                  ((eq result NIL))
-                  (T (return-from limdepthfirstsearch (cons (node-state initNode) result )))
+                  ((eq result NIL) NIL)
+                  (T (return-from limdepthfirstsearch (cons (problem-initial-state problem) result )))
             )
         )
       )
@@ -107,7 +106,7 @@
             (T (return-from limdepthfirstsearch ':corte))
       )
     )
-  )
+  
 )
 				      
 

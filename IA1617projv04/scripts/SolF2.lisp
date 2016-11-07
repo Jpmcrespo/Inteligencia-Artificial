@@ -82,7 +82,7 @@
 	)
 
 ;;; limdepthfirstsearch 
-(defun limdepthfirstsearch (problem lim &key cutoff)
+(defun limdepthfirstsearch (problem lim)
   "limited depth first search st - initial state problem - problem information lim - depth limit"
     (cond ( (funcall(problem-fn-isGoal problem) (problem-initial-state problem)) (return-from limdepthfirstsearch (list (problem-initial-state problem))) )
             ((eq 0 lim) (return-from limdepthfirstsearch ':corte))
@@ -102,7 +102,7 @@
             )
         )
       )
-      (cond ((eq NIL cutoff) NIL)
+      (cond ((null cutoff) NIL)
             (T (return-from limdepthfirstsearch ':corte))
       )
     )
@@ -111,7 +111,7 @@
 				      
 
 ;iterlimdepthfirstsearch
-(defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum))
+(defun iterlimdepthfirstsearch (problem)
   "limited depth first search st - initial state problem - problem information lim - depth limit"
   (do ( (limite 0 (1+ limite)) (res ':corte ) )
     ((not (eq res ':corte)) res)

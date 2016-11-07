@@ -75,22 +75,48 @@
 ;;; Pedir 
 (defun nextStates (st)
   "generate all possible next states"
-	(list st))
+  (let ((lst '()))
+  (dolist (el (possible-actions))
+    (setf lst (append (list (nextState st el)) lst  )))
+  lst)
+	)
 
 ;;; limdepthfirstsearch 
-(defun limdepthfirstsearch (problem lim &key cutoff?)
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - depth limit"
-	(list (make-node :state (problem-initial-state problem))) )
+(defun limdepthfirstsearch (problem lim &key cutoff)
+  "limited depth first search st - initial state problem - problem information lim - depth limit"
+	(let ((initNode  (make-node :state (problem-initial-state problem)) ))
+    (cond ( (funcall(problem-fn-isGoal problem) (node-state initNode)) (return-from limdepthfirstsearch (list (node-state initNode))) )
+            ((eq 0 lim) (return-from limdepthfirstsearch ':corte))
+    )
+    (let* ( (nextSt (nextStates (node-state initNode))) (cutoff NIL) )
+
+      (dolist (st nextSt)
+
+        (let* ( (child (make-problem :initial-state st 
+                                   :fn-isGoal (problem-fn-isGoal problem) 
+                                   :fn-nextStates (problem-fn-nextStates problem)) )
+                (result (limdepthfirstsearch child (- lim 1)) ) ) 
+
+            (cond ((eq result :corte) (setf cutoff T)) 
+                  ((eq result NIL))
+                  (T (return-from limdepthfirstsearch (cons (node-state initNode) result )))
+            )
+        )
+      )
+      (cond ((eq NIL cutoff) NIL)
+            (T (return-from limdepthfirstsearch ':corte))
+      )
+    )
+  )
+)
 				      
 
 ;iterlimdepthfirstsearch
 (defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum))
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - limit of depth iterations"
-	(list (make-node :state (problem-initial-state problem))) )
+  "limited depth first search st - initial state problem - problem information lim - depth limit"
+  (do ( (limite 0 (1+ limite)) (res ':corte ) )
+    ((not (eq res ':corte)) res)
+    (setf res (limdepthfirstsearch problem limite) )
+  )
+)
 

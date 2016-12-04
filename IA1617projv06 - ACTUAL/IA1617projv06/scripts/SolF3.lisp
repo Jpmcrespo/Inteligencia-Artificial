@@ -206,8 +206,7 @@
     do (let*  ( (expansionNode (findLowestF openList))
                 (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
               )
-      (print openList)
-      (delete expansionNode openList)
+      (setf openList (remove expansionNode openList))
       (push expansionNode closedList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
         (return-from a* (solution expansionNode))
@@ -235,6 +234,7 @@
       )
 
   )
+  (return-from a* nil)
 )
 )
 
@@ -252,9 +252,9 @@
         (setf finalNode el)
       )
     )
-  (print minimumF)
-  (print (state-pos (node-state finalNode)))
-  (print (state-vel (node-state finalNode)))
+  ;;;(print minimumF)
+  ;;;(print (state-pos (node-state finalNode)))
+  ;;;(print (state-vel (node-state finalNode)))
 
   (return-from findLowestF finalNode)
 )

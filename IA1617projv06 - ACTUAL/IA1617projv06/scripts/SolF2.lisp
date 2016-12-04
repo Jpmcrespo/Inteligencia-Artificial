@@ -44,53 +44,87 @@
 (defun isGoalp (st) 
   "check if st is a solution of the problem"
   (let ((current-position (state-pos st))
-	(track (state-track st)))
+  (track (state-track st)))
     (and (member current-position (track-endpositions track) :test #'equalp)
-	 T)))
+   T)))
 
 ;; Pedir 1,2
 (defun nextState (st act)
   "generate the nextState after state st and action act from prolem"
   (let ((new-state (make-state :action act :track (state-track st))))
     (setf (state-vel new-state)
-	  (make-vel (+ (vel-l (state-vel st)) (acce-l act))
-		    (+ (vel-c (state-vel st)) (acce-c act))))
+    (make-vel (+ (vel-l (state-vel st)) (acce-l act))
+        (+ (vel-c (state-vel st)) (acce-c act))))
     (setf (state-pos new-state)
-	  (make-pos (+ (pos-l (state-pos st)) (vel-l (state-vel new-state)))
-		    (+ (pos-c (state-pos st)) (vel-c (state-vel new-state)))))
+    (make-pos (+ (pos-l (state-pos st)) (vel-l (state-vel new-state)))
+        (+ (pos-c (state-pos st)) (vel-c (state-vel new-state)))))
     (setf (state-cost new-state)
-	  (cond ((isGoalp new-state) -100)
-		((isObstaclep (state-pos new-state) (state-track new-state)) 20)
-		(T 1)))
+    (cond ((isGoalp new-state) -100)
+    ((isObstaclep (state-pos new-state) (state-track new-state)) 20)
+    (T 1)))
     (when (= (state-cost new-state) 20)
       (setf (state-vel new-state) (make-vel 0 0))
       (setf (state-pos new-state) (make-pos (pos-l (state-pos st))
-					    (pos-c (state-pos st)))))
+              (pos-c (state-pos st)))))
     (values new-state)))
-
-
 
 ;; Solution of phase 2
 
 ;;; Pedir 
 (defun nextStates (st)
   "generate all possible next states"
-	(list st))
+  (let ((successors nil))
+    (dolist (act (possible-actions) successors)
+      (let ((new-state (nextState st act)))
+  (if (not (member new-state successors :test #'equalp))
+      (push new-state successors))))))
+
+;;; Solucao e uma seq ordenada de estados
+(defun solution (node)
+  (let ((seq-states nil))
+    (loop 
+      (when (null node)
+  (return))
+      (push (node-state node) seq-states)
+      (setf node (node-parent node)))
+    (values seq-states)))
+
 
 ;;; limdepthfirstsearch 
-(defun limdepthfirstsearch (problem lim)
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - depth limit"
-	(list (make-node :state (problem-initial-state problem))) )
-				      
+(defun limdepthfirstsearch (problem lim &key cutoff?)
+
+  (labels ((limdepthfirstsearch-aux (node problem lim)
+       (if (isGoalp (node-state node))
+     (solution node)
+     (if (zerop lim)
+         :cutoff
+         (let ((cutoff? nil))
+           (dolist (new-state (nextStates (node-state node)))
+       (let* ((new-node (make-node :parent node :state new-state))
+        (res (limdepthfirstsearch-aux new-node problem (1- lim))))
+         (if (eq res :cutoff)
+             (setf cutoff? :cutoff)
+             (if (not (null res))
+           (return-from limdepthfirstsearch-aux res)))))
+           (values cutoff?))))))
+    (let ((res (limdepthfirstsearch-aux (make-node :parent nil :state (problem-initial-state problem))
+          problem
+          lim)))
+      (if (eq res :cutoff)
+    (if cutoff?
+        :cutoff
+        nil)
+    res))))
+              
 
 ;iterlimdepthfirstsearch
-(defun iterlimdepthfirstsearch (problem)
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - limit of depth iterations"
-	(list (make-node :state (problem-initial-state problem))) )
-
+(defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum))
+ 
+  (let ((i 0))
+    (loop
+      (let ((res (limdepthfirstsearch problem i :cutoff? T)))
+  (when (and res (not (eq res :cutoff)))
+    (return res))
+  (incf i)
+  (if (> i lim)
+      (return nil))))))

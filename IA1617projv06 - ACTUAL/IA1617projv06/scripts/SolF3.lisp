@@ -92,10 +92,7 @@
 
 ;;; limdepthfirstsearch 
 (defun limdepthfirstsearch (problem lim &key cutoff?)
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - depth limit"
+
   (labels ((limdepthfirstsearch-aux (node problem lim)
        (if (isGoalp (node-state node))
      (solution node)
@@ -122,10 +119,7 @@
 
 ;iterlimdepthfirstsearch
 (defun iterlimdepthfirstsearch (problem &key (lim most-positive-fixnum))
-  "limited depth first search
-     st - initial state
-     problem - problem information
-     lim - limit of depth iterations"
+ 
   (let ((i 0))
     (loop
       (let ((res (limdepthfirstsearch problem i :cutoff? T)))
@@ -148,7 +142,8 @@
         :VEL 0
         :ACTION act
         :COST 0
-        :TRACK (state-track st) )))
+        :TRACK (state-track st)
+        :OTHER (1+ (state-other st)) )))
   st2
   ))))
 
@@ -166,13 +161,35 @@
 ;; Heuristic
 (defun compute-heuristic (st)
   (let ((prob (make-problem :initial-state st :fn-nextStates #'NextStatesHeur :fn-isGoal #'isGoalp)))
+  (setf (state-other st) 0)
   (cond ((IsGoalp st) 0)
     ( (IsObstaclep (state-pos st) (state-track st)) most-positive-fixnum )
-    ( t (list-length (iterlimdepthfirstsearch prob)))
+    ( t (compute-heuristic-aux (list st) 0))
 	)
   )
   )
-	  
+
+(defun compute-heuristic-aux(lst index)
+  (let ((result '()))
+  (let ((current (nth index lst)))
+    (let ((currentList (NextStatesHeur current)))
+    (dolist(el currentList)
+      (cond ((isObstaclep (state-pos el) (state-track el)) (setf currentList (remove el currentList)))
+        ((isGoalp el) (return-from compute-heuristic-aux (state-other el)) )
+        (t ( dolist(ell lst)
+          (if (equal (state-pos el) (state-pos ell))  
+            (setf currentList(remove el currentList))
+            )
+          )
+        )
+      )
+    )
+    (setf result (append lst currentList))
+    (compute-heuristic-aux result (1+ index)) 
+  )
+  )
+  )
+  )
   
 	    
 ;;; A*

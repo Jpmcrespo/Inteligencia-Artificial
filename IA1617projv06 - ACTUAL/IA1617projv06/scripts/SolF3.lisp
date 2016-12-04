@@ -191,7 +191,68 @@
   )
   )
   
-	    
+
 ;;; A*
 (defun a* (problem)
-  (list (make-node :state (problem-initial-state problem))))
+  (let* ( (heur (compute-heuristic (problem-initial-state problem)))
+          (openList (list (make-node  :state (problem-initial-state problem)
+                      :g 0
+                      :h heur
+                      :f heur
+                      )
+                  )
+          )
+          (closedList '())
+        )
+  (loop while (not (eq (list-length openList) 0))
+    do (let*  ( (expansionNode (findLowestF openList))
+                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
+              )
+      (remove expansionNode openList)
+      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
+        (return-from a* (solution expansionNode))
+        )
+      (dolist (st8 nextSt)
+        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
+                (h (compute-heuristic st8))
+                (successor (make-node  
+                      :parent expansionNode
+                      :state st8
+                      :g g
+                      :h h
+                      :f (+ g h)
+                      ))
+                (flag nil)
+                ) 
+            (dolist (newNode (append openList closedList))
+              (when (equal (state-pos (node-state newNode)) (state-pos (node-state successor)))
+                (setf flag t))
+              )
+            (when (not flag) (push successor openList))  
+          )
+        )
+      (push expansionNode closedList)
+
+      )
+
+  )
+)
+)
+
+
+
+
+
+(defun findLowestF (lista)
+  (let* ( (minimumF most-positive-fixnum)
+          (finalNode nil)
+        )
+  (dolist (el lista)
+    (when (< (node-f el) minimumF) 
+        (setf minimumF (node-f el))
+        (setf finalNode el)
+      )
+    )
+  (return-from findLowestF finalNode)
+)
+)

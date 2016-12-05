@@ -157,15 +157,16 @@
 
 
 ;; Heuristic
+
 (defun compute-heuristic (st)
-  (let ((prob (make-problem :initial-state st :fn-nextStates #'NextStatesHeur :fn-isGoal #'isGoalp)))
+  
   (setf (state-other st) 0)
   (cond ((IsGoalp st) 0)
     ( (IsObstaclep (state-pos st) (state-track st)) most-positive-fixnum )
     ( t (compute-heuristic-aux (list st) 0))
-	)
   )
   )
+  
 
 (defun compute-heuristic-aux(lst index)
   (let ((result '()))
@@ -190,11 +191,25 @@
   )
 
 
-  
+(defun vector-distance (st) ;;cena do silveira
+  (setf result most-positive-fixnum)
+  (let ((track  (state-track st)))
+        (dolist (endpos (track-endpositions track))
+          (let* ((distCol  (- (second endpos) (second (state-pos st))))
+          (distLin  (- (first  endpos) (first (state-pos st)))))
+          (setf result (min result (+ distCol (max (- distLin distCol) 0))))
+          )
+          )
+
+  (return-from vector-distance result)
+
+  )
+)
+
 
 ;;; A*
 (defun a* (problem)
-  (let* ( (heur (compute-heuristic (problem-initial-state problem)))
+  (let* ( (heur (funcall(problem-fn-h problem) (problem-initial-state problem)))
           (openList (list (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
@@ -213,7 +228,7 @@
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (h (compute-heuristic st8))
+                (h (funcall(problem-fn-h problem) st8))
                 (successor (make-node  
                       :parent expansionNode
                       :state st8
@@ -238,7 +253,7 @@
 
 ;;; bestsearch
 (defun bestsearch (problem)
-  (let* ( (heur (compute-heuristic (problem-initial-state problem)))
+  (let* ( (heur (funcall(problem-fn-h problem) (problem-initial-state problem)))
           (openList (list (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
@@ -255,11 +270,11 @@
       (setf openList (remove expansionNode openList))
       (push expansionNode closedList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from a* (solution expansionNode))
+        (return-from bestsearch (solution expansionNode))
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (h (compute-heuristic st8))
+                (h (funcall(problem-fn-h problem) st8))
                 (successor (make-node  
                       :parent expansionNode
                       :state st8
@@ -280,7 +295,7 @@
       )
 
   )
-  (return-from a* nil)
+  (return-from bestsearch nil)
 )
 )
 
@@ -301,3 +316,4 @@
   (return-from findLowestF finalNode)
 )
 )
+

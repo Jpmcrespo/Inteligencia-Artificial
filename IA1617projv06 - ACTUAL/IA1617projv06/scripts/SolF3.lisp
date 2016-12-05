@@ -163,17 +163,17 @@
   (setf (state-other st) 0)
   (cond ((IsGoalp st) 0)
     ( (IsObstaclep (state-pos st) (state-track st)) most-positive-fixnum )
-    ( t (compute-heuristic-aux (list st) 0))
+    ( t (compute-heuristic-aux (list st) 0 (state-track st)))
   )
   )
   
 
-(defun compute-heuristic-aux(lst index)
+(defun compute-heuristic-aux(lst index trak)
   (let ((result '()))
   (let ((current (nth index lst)))
     (let ((currentList (NextStatesHeur current)))
     (dolist(el currentList)
-      (cond ((isObstaclep (state-pos el) (state-track el)) (setf currentList (remove el currentList)))
+      (cond ((isObstaclep (state-pos el) trak) (setf currentList (remove el currentList)))
         ((isGoalp el) (return-from compute-heuristic-aux (state-other el)) )
         (t ( dolist(ell lst)
           (if (equal (state-pos el) (state-pos ell))  
@@ -184,11 +184,35 @@
       )
     )
     (setf result (append lst currentList))
-    (compute-heuristic-aux result (1+ index)) 
+    (compute-heuristic-aux result (1+ index) trak) 
   )
   )
   )
   )
+
+
+
+(defun fillHeuristicTrack(Htrack)
+  (let* (
+        (i 0)
+        (e 0)
+        )
+
+    (dolist (outterList (track-env Htrack))
+      (dolist (element outterList)
+        (cond ((null element) (setf (nth e (nth i (track-env Htrack))) most-positive-fixnum ))
+              (t (setf (nth e (nth i  (track-env Htrack))) (compute-heuristic (make-state  :pos (list i e)
+                                                                              :track Htrack)) ))
+          )
+
+        (incf e)
+        )
+      (setf e 0)
+      (incf i)
+      )
+    Htrack)
+  )
+
 
 
 (defun vector-distance (st) ;;cena do silveira

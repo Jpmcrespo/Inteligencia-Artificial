@@ -20,11 +20,11 @@
 (defvar *t2* nil)
 (defvar *p2* nil)
 
-(setf *t2* (loadtrack "track9.txt"))
+(setf *t2* (loadtrack "track10000.txt"))
 
 (setf *p2* (make-problem :initial-state (initial-state *t2*)  :fn-isGoal #'isGoalp	  :fn-nextstates #'nextStates	  :fn-h #'compute-heuristic))
 			  
-(format t "~&Exercise 3.2b - A*~&")
+(format t "~&Exercise 3.2b - BestSearch")
  (let ((real1 (get-internal-real-time)))
 		 (with-open-file (str "out3.2b.txt" :direction :input)
 	   (format t "~% Solution is correct? ~a~&" (string= (format nil "~{~a~^~}" (states-to-list (a* *p2*))) (read str))))

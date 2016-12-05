@@ -135,7 +135,6 @@
 
 (defun NextStateHeur (st act) 
   (let ((pos (list (+ (first (state-pos st)) (first act) ) (+ (second (state-pos st)) (second act) ) ) )) 
-  (let ((track (state-track st)))
   (let(( st2 (make-STATE :POS pos 
         :VEL 0
         :ACTION act
@@ -143,7 +142,7 @@
         :TRACK (state-track st)
         :OTHER (1+ (state-other st)) )))
   st2
-  ))))
+  )))
 
 
 ;;; Pedir 
@@ -158,14 +157,14 @@
 
 ;; Heuristic
 (defun compute-heuristic (st)
-  (let ((prob (make-problem :initial-state st :fn-nextStates #'NextStatesHeur :fn-isGoal #'isGoalp)))
+  
   (setf (state-other st) 0)
   (cond ((IsGoalp st) 0)
     ( (IsObstaclep (state-pos st) (state-track st)) most-positive-fixnum )
     ( t (compute-heuristic-aux (list st) 0))
 	)
   )
-  )
+  
 
 (defun compute-heuristic-aux(lst index)
   (let ((result '()))
@@ -255,7 +254,7 @@
       (setf openList (remove expansionNode openList))
       (push expansionNode closedList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from a* (solution expansionNode))
+        (return-from bestsearch (solution expansionNode))
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
@@ -280,7 +279,7 @@
       )
 
   )
-  (return-from a* nil)
+  (return-from bestsearch nil)
 )
 )
 

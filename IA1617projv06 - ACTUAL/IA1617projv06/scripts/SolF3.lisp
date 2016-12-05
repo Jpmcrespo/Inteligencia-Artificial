@@ -31,6 +31,7 @@
 
 (defun getTrackContent (pos track)
   (nth (pos-c pos) (nth (pos-l pos) (track-env track))))
+ 
 
 (defun isObstaclep (pos track)
   "check if the position pos is an obstacle"
@@ -155,6 +156,20 @@
   )
 
 
+(defun NextPos (pos act) 
+(list (+ (first pos) (first act) ) (+ (second pos) (second act) ) ) 
+  
+) 
+
+
+(defun NextPoses (pos)
+(let ((lst '()))
+  (dolist (el (possible-actions))
+    (setf lst (cons  (nextPos pos el) lst )) )
+  lst)  
+  )
+
+
 ;; Heuristic
 
 (defun compute-heuristic (st)
@@ -214,6 +229,37 @@
   )
 
 
+(defun pos-equal (a b)
+  (return-from pos-equal (and (eq (first a) (first b) ) (eq (second a) (second b) ) ) )
+  )
+
+(defun fillmap (track)
+  (let* (( i 0 )
+          (currentList (track-endpositions track))
+          (oldList '())
+          (newList '())
+          (nextPosList '())
+          (Htrack (track-env track) )
+          )
+  (loop while (not (eq (list-length currentList) 0))
+    do (dolist (pos currentList)
+      (setf (nth (second pos) (nth (first pos) Htrack)) i )
+      (setf nextPosList (NextPoses pos))
+
+      (dolist (testpos nextPosList)
+        (when  (and (not(isObstaclep testpos track)) (not (member testpos oldList :test #'pos-equal)) (not (member testpos (track-endpositions track ) :test #'pos-equal )) )
+              
+              (push testpos newList)
+              (push testpos oldList)
+          )
+      )    
+   )
+  (setf currentList newList)
+  (setf newList '())
+  (setf i (1+ i))
+  )
+
+  ))
 
 (defun vector-distance (st) ;;cena do silveira
   (setf result most-positive-fixnum)

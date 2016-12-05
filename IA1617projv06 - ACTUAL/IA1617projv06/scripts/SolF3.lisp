@@ -156,22 +156,24 @@
 
 
 ;; Heuristic
+
 (defun compute-heuristic (st)
   
   (setf (state-other st) 0)
   (cond ((IsGoalp st) 0)
     ( (IsObstaclep (state-pos st) (state-track st)) most-positive-fixnum )
-    ( t (compute-heuristic-aux (list st) 0))
-	)
+    ( t (compute-heuristic-aux (list st) 0 (state-track st)))
   )
+  )
+
   
 
-(defun compute-heuristic-aux(lst index)
+(defun compute-heuristic-aux(lst index trak)
   (let ((result '()))
   (let ((current (nth index lst)))
     (let ((currentList (NextStatesHeur current)))
     (dolist(el currentList)
-      (cond ((isObstaclep (state-pos el) (state-track el)) (setf currentList (remove el currentList)))
+      (cond ((isObstaclep (state-pos el) trak) (setf currentList (remove el currentList)))
         ((isGoalp el) (return-from compute-heuristic-aux (state-other el)) )
         (t ( dolist(ell lst)
           (if (equal (state-pos el) (state-pos ell))  
@@ -182,18 +184,56 @@
       )
     )
     (setf result (append lst currentList))
-    (compute-heuristic-aux result (1+ index)) 
+    (compute-heuristic-aux result (1+ index) trak) 
   )
   )
   )
   )
 
 
-  
+
+(defun fillHeuristicTrack(Htrack)
+  (let* (
+        (i 0)
+        (e 0)
+        )
+
+    (dolist (outterList (track-env Htrack))
+      (dolist (element outterList)
+        (cond ((null element) (setf (nth e (nth i (track-env Htrack))) most-positive-fixnum ))
+              (t (setf (nth e (nth i  (track-env Htrack))) (compute-heuristic (make-state  :pos (list i e)
+                                                                              :track Htrack)) ))
+          )
+
+        (incf e)
+        )
+      (setf e 0)
+      (incf i)
+      )
+    Htrack)
+  )
+
+
+
+(defun vector-distance (st) ;;cena do silveira
+  (setf result most-positive-fixnum)
+  (let ((track  (state-track st)))
+        (dolist (endpos (track-endpositions track))
+          (let* ((distCol  (- (second endpos) (second (state-pos st))))
+          (distLin  (- (first  endpos) (first (state-pos st)))))
+          (setf result (min result (+ distCol (max (- distLin distCol) 0))))
+          )
+          )
+
+  (return-from vector-distance result)
+
+  )
+)
+
 
 ;;; A*
 (defun a* (problem)
-  (let* ( (heur (compute-heuristic (problem-initial-state problem)))
+  (let* ( (heur (funcall(problem-fn-h problem) (problem-initial-state problem)))
           (openList (list (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
@@ -212,7 +252,7 @@
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (h (compute-heuristic st8))
+                (h (funcall(problem-fn-h problem) st8))
                 (successor (make-node  
                       :parent expansionNode
                       :state st8
@@ -237,7 +277,7 @@
 
 ;;; bestsearch
 (defun bestsearch (problem)
-  (let* ( (heur (compute-heuristic (problem-initial-state problem)))
+  (let* ( (heur (funcall(problem-fn-h problem) (problem-initial-state problem)))
           (openList (list (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
@@ -258,7 +298,7 @@
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (h (compute-heuristic st8))
+                (h (funcall(problem-fn-h problem) st8))
                 (successor (make-node  
                       :parent expansionNode
                       :state st8
@@ -300,3 +340,4 @@
   (return-from findLowestF finalNode)
 )
 )
+

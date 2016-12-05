@@ -225,7 +225,7 @@
                 )
             (dolist (oldNode (append openList closedList))
               (when (equal (state-pos (node-state oldNode)) (state-pos (node-state successor)))
-                (setf flag t) )
+                (setf flag t) (return))
               )
             (when (not flag) (push successor openList))  
           )

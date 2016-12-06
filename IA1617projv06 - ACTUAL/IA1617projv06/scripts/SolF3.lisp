@@ -376,10 +376,10 @@
     do (let*  ( (expansionNode (findLowestF openList))
                 (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
               )
-      (print (state-pos (node-state expansionNode)))
       (setf openList (remove expansionNode openList))
       (push expansionNode closedList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
+        (print "bem campeaao")
         (return-from bestsearch (solution expansionNode))
         )
       (dolist (st8 nextSt)
@@ -462,17 +462,34 @@
 )
 ))
 
+(defun copyList(lst)
+  (let* ((i 0)
+         (e 0)
+         (finalList '())
+        )
 
+    (dolist (outterList lst)
+      (dolist (element outterList)
+        (setf (nth e (nth i finalList)) (nth e (nth i lst)) 
+          )
+
+        (incf e)
+        )
+      (setf e 0)
+      (incf i)
+      )
+    finalList)
+  )
+  
 
 (defun bestsearch3 (problem)
   (let*((Htrack (copy-structure (state-track (problem-initial-state problem))))
         (Hmap (track-env Htrack))
-        (closedMap (copy-structure Hmap))
+        
 
     ) 
-
+  (setf closedMap (mapcar #'copy-list Hmap))
   (fillmap2 Htrack)
-
   (let* ( 
           
 
@@ -488,42 +505,36 @@
           (closedList '())
           
         )
-  (print "1")
   (loop while (not (eq (list-length openList) 0))
     do (let*  ( (expansionNode (findLowestF openList))
                 (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
               )
       (print (state-pos (node-state expansionNode)))
       (setf openList (remove expansionNode openList))
-      (push expansionNode closedList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from bestsearch (solution expansionNode))
+        (return-from bestsearch3 (solution expansionNode))
         )
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
                 (pos (state-pos st8))
                 (h (nth (second pos) (nth (first pos) Hmap)))
-                (successor (make-node  
+                )
+            (when (not (null (nth (second pos) (nth (first pos) closedMap)) )) (push (make-node  
                       :parent expansionNode
                       :state st8
                       :g g
                       :h h
                       :f (+ g h)
-                      ))
-                (flag nil)
-                )
-            (dolist (oldNode (append openList closedList))
-              (when (equal (state-pos (node-state oldNode)) (state-pos (node-state successor)))
-                (setf flag t) (return))
-              )
-            (when (not flag) (push successor openList))
+                      ) openList) (setf (nth (second pos) (nth (first pos) closedMap)) 1) 
+            )
           )
         )
 
       )
 
   )
-  (return-from bestsearch nil)
+  (print "hi")
+  (return-from bestsearch3 nil)
 )
 )
 )
@@ -532,10 +543,13 @@
 
 
 (defun findLowestF (lista)
+
   (let* ( (minimumF most-positive-fixnum)
           (finalNode nil)
+          (listaF '())
         )
   (dolist (el lista)
+    (setf listaF (append (list (node-f el)) listaF))
     (when (< (node-f el) minimumF) 
         (setf minimumF (node-f el))
         (setf finalNode el)
@@ -544,7 +558,8 @@
   ;;;(print minimumF)
   ;;;(print (state-pos (node-state finalNode)))
   ;;;(print (state-vel (node-state finalNode)))
-
+  ;;(print listaF)
+  ;;(print minimumF)
   (return-from findLowestF finalNode)
 )
 )

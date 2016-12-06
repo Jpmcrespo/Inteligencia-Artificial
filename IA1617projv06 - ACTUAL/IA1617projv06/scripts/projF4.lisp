@@ -20,7 +20,7 @@
 (defvar *t2* nil)
 (defvar *p2* nil)
 
-(setf *t2* (loadtrack "track0.txt"))
+(setf *t2* (loadtrack "ntrack1.txt"))
 
 (setf *p2* (make-problem :initial-state (initial-state *t2*)  :fn-isGoal #'isGoalp	  :fn-nextstates #'nextStates	  :fn-h #'vector-distance))
 			  

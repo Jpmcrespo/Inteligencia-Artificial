@@ -557,7 +557,7 @@
 
 
 (defun insertNode (node hip)
-  (setf (heap-nodes hip) (append node (heap-nodes hip)))
+  (setf (heap-nodes hip) (append (heap-nodes hip) list(node)))
   (incf (heap-size hip))
   (bubbleUp hip)
   )
@@ -566,9 +566,38 @@
 (defun bubbleUp (hip)
   (let ((pos (1- (heap-size hip))))
   (loop while (and (> pos 0) (> (node-f (nth (/ pos 2) (heap-nodes hip)))  (node-f (nth pos (heap-nodes hip)))))
-    (let ((y (nth pos (heap-nodes hip))))
-
+    do (let ((y (nth pos (heap-nodes hip))))
+      (setf   (nth pos (heap-nodes hip))  (nth (/ pos 2) (heap-nodes hip))  )
+      (setf   (nth (/ pos 2) (heap-nodes hip)) y)
       )
   )
 )
+)
+
+(defun extractMin (hip)
+  (let ((result (first (heap-nodes hip) )))
+  (setf (first (heap-nodes hip)) (nth (1- (heap-nodes hip)) (heap-nodes hip) )  )
+  (setf (heap-nodes hip) (butlast (heap-nodes hip) ))
+  (decf (heap-size hip) )
+  (sinkdown 1 hip)
+
+
+  )
+  )
+
+(defun sinkdown (pos hip)
+  (let ((minChild))
+  (if (> (node-f (nth pos*2 (heap))) (node-f (nth pos*2+1 (heap))) ) 
+    (setf minChild pos*2+1)
+    (setf minChild pos*2) 
+    )
+  (when (> (node-f (nth pos (heap) )) (node-f (nth minChild (heap)) ) )
+    (let ((y (nth pos (heap-nodes hip))))
+      (setf   (nth pos (heap-nodes hip))  (nth minChild (heap-nodes hip))  )
+      (setf   (nth minChild (heap-nodes hip)) y)
+      )
+    (sinkdown minChild hip)
+    )
+
+  )
 )

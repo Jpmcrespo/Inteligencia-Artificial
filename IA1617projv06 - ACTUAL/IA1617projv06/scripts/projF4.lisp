@@ -22,11 +22,11 @@
 
 (setf *t2* (loadtrack "ntrack1.txt"))
 
-(setf *p2* (make-problem :initial-state (initial-state *t2*)  :fn-isGoal #'isGoalp	  :fn-nextstates #'nextStates	  :fn-h #'compute-heuristic))
+(setf *p2* (make-problem :initial-state (initial-state *t2*)  :fn-isGoal #'isGoalp	  :fn-nextstates #'nextStates	  :fn-h #'vector-distance))
 			  
 (format t "~&Exercise 3.2b - BestSearch")
  (let ((real1 (get-internal-real-time)))
 		 (with-open-file (str "out3.2b.txt" :direction :input)
-	   (format t "~% Solution is correct? ~a~&" (string= (format nil "~{~a~^~}" (states-to-list (BestSearch *p2*))) (read str))))
+	   (format t "~% Solution is correct? ~a~&" (string= (format nil "~{~a~^~}" (states-to-list (bestsearch *p2*))) (read str))))
       (let ((real2 (get-internal-real-time)))
 	  (format t "~%Computation took: ~f seconds of real time~%" (/ (- real2 real1) internal-time-units-per-second))))

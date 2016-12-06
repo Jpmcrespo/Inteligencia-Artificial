@@ -207,17 +207,21 @@
 
 
 
-(defun fillHeuristicTrack(Htrack)
-  (let* (
+(defun pos-equal (a b)
+  (return-from pos-equal (and (eq (first a) (first b) ) (eq (second a) (second b) ) ) )
+  )
+
+
+
+(defun initializeTrack(trak)
+  (let* ((Htrack (track-env trak))
         (i 0)
         (e 0)
         )
 
-    (dolist (outterList (track-env Htrack))
+    (dolist (outterList Htrack)
       (dolist (element outterList)
-        (cond ((null element) (setf (nth e (nth i (track-env Htrack))) most-positive-fixnum ))
-              (t (setf (nth e (nth i  (track-env Htrack))) (compute-heuristic (make-state  :pos (list i e)
-                                                                              :track Htrack)) ))
+        (cond ((null element) (setf (nth e (nth i Htrack)) most-positive-fixnum ))
           )
 
         (incf e)
@@ -226,11 +230,6 @@
       (incf i)
       )
     Htrack)
-  )
-
-
-(defun pos-equal (a b)
-  (return-from pos-equal (and (eq (first a) (first b) ) (eq (second a) (second b) ) ) )
   )
 
 (defun fillmap (track)
@@ -256,10 +255,40 @@
    )
   (setf currentList newList)
   (setf newList '())
-  (setf i (1+ i))
+  (incf i)
   )
 
   ))
+
+
+(defun fillmap2(track)
+  (let* (( i 0 )
+          (currentList (track-endpositions track))
+          (newList '())
+          (nextPosList '())
+          (Htrack (track-env track) )
+          )
+  (dolist (pos currentList)
+    (setf (nth (second pos) (nth (first pos) Htrack)) i )
+    )
+  (incf i)
+  (loop while (not (eq (list-length currentList) 0))
+    do (dolist (pos currentList)
+      (setf nextPosList (NextPoses pos))
+      (dolist (testpos nextPosList)
+        (when  (and (equal t (nth (second testpos) (nth (first testpos) Htrack))) )
+              (setf (nth (second testpos) (nth (first testpos) Htrack)) i )
+              (push testpos newList)
+          )
+      )    
+   )
+  (setf currentList newList)
+  (setf newList '())
+  (incf i)
+  )
+
+  )
+  )
 
 (defun vector-distance (st) ;;cena do silveira
   (setf result most-positive-fixnum)

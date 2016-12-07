@@ -504,13 +504,14 @@
   (let* ( 
           (initpos (state-pos (problem-initial-state problem)))
           (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (make-heap)
-          )     
-        )
-  (insertNode (make-node  :state (problem-initial-state problem)
+          (openList (make-heap :size 1 :nodes (list '() (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
-                      :f heur) openList )
+                      :f heur
+                      ))
+                  )
+          )     
+        )
   (print "11")
   (loop while (not (equal (heap-size openList) 0))
     do (let*  ( (expansionNode (extractMin openList))
@@ -606,52 +607,50 @@
 
 
 
-(defstruct heap 
+ (defstruct heap 
    nodes
    size)
 
 
 (defun insertNode (node hip)
-  (when (null (heap-nodes hip))
-      (setf (heap-nodes hip) (make-array 50 :fill-pointer 0 :adjustable t)))
-  (vector-push-extend node (heap-nodes hip))
-    (incf (heap-size hip))
-    (bubbleUp hip)
+  (setf (heap-nodes hip) (append (heap-nodes hip) list(node)))
+  (incf (heap-size hip))
+  (bubbleUp hip)
   )
 
 
-(defun bubbleUp (hip node)
+(defun bubbleUp (hip)
   (let ((pos (1- (heap-size hip))))
-  (loop while (and (> pos 0) (>= (node-f (aref (heap-nodes hip) (/ pos 2)))  (node-f (aref pos (heap-nodes hip)))))
-    do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (/ pos 2)))
-      (setf pos (/ pos 2))
-      
+  (loop while (and (> pos 0) (> (node-f (nth (/ pos 2) (heap-nodes hip)))  (node-f (nth pos (heap-nodes hip)))))
+    do (let ((y (nth pos (heap-nodes hip))))
+      (setf   (nth pos (heap-nodes hip))  (nth (/ pos 2) (heap-nodes hip))  )
+      (setf   (nth (/ pos 2) (heap-nodes hip)) y)
+      )
   )
-  (setf (aref pos (heap-nodes hip)) node)
 )
 )
 
 (defun extractMin (hip)
-  (let ((result (aref (heap-nodes hip) 0 )))
-  (setf (aref (heap-nodes hip) 0) (aref (heap-nodes hip) (1- (heap-size hip))  )  )
-  (decf (fill-pointer (heap-nodes hip)))
+  (let ((result (first (heap-nodes hip) )))
+  (setf (first (heap-nodes hip)) (nth (1- (heap-nodes hip)) (heap-nodes hip) )  )
+  (setf (heap-nodes hip) (butlast (heap-nodes hip) ))
   (decf (heap-size hip) )
-  (sinkdown 0 hip)
-  (result)
+  (sinkdown 1 hip)
+
 
   )
   )
 
 (defun sinkdown (pos hip)
   (let ((minChild))
-  (if (> (node-f (aref (heap-nodes hip) (* pos 2))) (node-f (aref (heap-nodes hip) (1+ (* pos 2)))) ) 
-    (setf minChild (1+ (* pos 2)))
-    (setf minChild (* pos 2)) 
+  (if (> (node-f (nth pos*2 (heap))) (node-f (nth pos*2+1 (heap))) ) 
+    (setf minChild pos*2+1)
+    (setf minChild pos*2) 
     )
-  (when (> (node-f (aref (heap-nodes hip) pos)) (node-f (aref (heap-nodes hip) minChild) ) )
-    (let ((y (aref (heap-nodes hip) pos)))
-      (setf   (aref (heap-nodes hip) pos)  (aref (heap-nodes hip) minChild)  )
-      (setf   (aref  (heap-nodes hip) minChild) y)
+  (when (> (node-f (nth pos (heap) )) (node-f (nth minChild (heap)) ) )
+    (let ((y (nth pos (heap-nodes hip))))
+      (setf   (nth pos (heap-nodes hip))  (nth minChild (heap-nodes hip))  )
+      (setf   (nth minChild (heap-nodes hip)) y)
       )
     (sinkdown minChild hip)
     )

@@ -1,5 +1,5 @@
 ;;; this is your solution file
-(load "SolF3.fas")
+(load "SolF3.lisp")
 
 (defun states-to-list (stts)
   (loop for st in stts

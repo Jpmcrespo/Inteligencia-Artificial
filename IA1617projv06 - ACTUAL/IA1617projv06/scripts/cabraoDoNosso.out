@@ -1,0 +1,137 @@
+("POS: (86 15) VEL: (0 0) ACT: NIL COST: 0
+"
+ "POS: (85 15) VEL: (-1 0) ACT: (-1 0) COST: 1
+"
+ "POS: (83 15) VEL: (-2 0) ACT: (-1 0) COST: 1
+"
+ "POS: (80 15) VEL: (-3 0) ACT: (-1 0) COST: 1
+"
+ "POS: (76 15) VEL: (-4 0) ACT: (-1 0) COST: 1
+"
+ "POS: (71 15) VEL: (-5 0) ACT: (-1 0) COST: 1
+"
+ "POS: (65 15) VEL: (-6 0) ACT: (-1 0) COST: 1
+"
+ "POS: (58 15) VEL: (-7 0) ACT: (-1 0) COST: 1
+"
+ "POS: (50 15) VEL: (-8 0) ACT: (-1 0) COST: 1
+"
+ "POS: (42 16) VEL: (-8 1) ACT: (0 1) COST: 1
+"
+ "POS: (35 18) VEL: (-7 2) ACT: (1 1) COST: 1
+"
+ "POS: (27 20) VEL: (-8 2) ACT: (-1 0) COST: 1
+"
+ "POS: (20 23) VEL: (-7 3) ACT: (1 1) COST: 1
+"
+ "POS: (14 27) VEL: (-6 4) ACT: (1 1) COST: 1
+"
+ "POS: (9 32) VEL: (-5 5) ACT: (1 1) COST: 1
+"
+ "POS: (5 38) VEL: (-4 6) ACT: (1 1) COST: 1
+"
+ "POS: (5 38) VEL: (0 0) ACT: (0 -1) COST: 20
+"
+ "POS: (5 39) VEL: (0 1) ACT: (0 1) COST: 1
+"
+ "POS: (6 40) VEL: (1 1) ACT: (1 0) COST: 1
+"
+ "POS: (8 42) VEL: (2 2) ACT: (1 1) COST: 1
+"
+ "POS: (11 45) VEL: (3 3) ACT: (1 1) COST: 1
+"
+ "POS: (15 49) VEL: (4 4) ACT: (1 1) COST: 1
+"
+ "POS: (20 53) VEL: (5 4) ACT: (1 0) COST: 1
+"
+ "POS: (26 58) VEL: (6 5) ACT: (1 1) COST: 1
+"
+ "POS: (33 63) VEL: (7 5) ACT: (1 0) COST: 1
+"
+ "POS: (41 67) VEL: (8 4) ACT: (1 -1) COST: 1
+"
+ "POS: (49 70) VEL: (8 3) ACT: (0 -1) COST: 1
+"
+ "POS: (57 74) VEL: (8 4) ACT: (0 1) COST: 1
+"
+ "POS: (65 77) VEL: (8 3) ACT: (0 -1) COST: 1
+"
+ "POS: (65 77) VEL: (0 0) ACT: (0 -1) COST: 20
+"
+ "POS: (64 77) VEL: (-1 0) ACT: (-1 0) COST: 1
+"
+ "POS: (63 78) VEL: (-1 1) ACT: (0 1) COST: 1
+"
+ "POS: (61 80) VEL: (-2 2) ACT: (-1 1) COST: 1
+"
+ "POS: (58 83) VEL: (-3 3) ACT: (-1 1) COST: 1
+"
+ "POS: (54 87) VEL: (-4 4) ACT: (-1 1) COST: 1
+"
+ "POS: (49 92) VEL: (-5 5) ACT: (-1 1) COST: 1
+"
+ "POS: (43 97) VEL: (-6 5) ACT: (-1 0) COST: 1
+"
+ "POS: (38 101) VEL: (-5 4) ACT: (1 -1) COST: 1
+"
+ "POS: (34 104) VEL: (-4 3) ACT: (1 -1) COST: 1
+"
+ "POS: (31 106) VEL: (-3 2) ACT: (1 -1) COST: 1
+"
+ "POS: (29 107) VEL: (-2 1) ACT: (1 -1) COST: 1
+"
+ "POS: (27 107) VEL: (-2 0) ACT: (0 -1) COST: 1
+"
+ "POS: (25 106) VEL: (-2 -1) ACT: (0 -1) COST: 1
+"
+ "POS: (22 104) VEL: (-3 -2) ACT: (-1 -1) COST: 1
+"
+ "POS: (18 102) VEL: (-4 -2) ACT: (-1 0) COST: 1
+"
+ "POS: (13 101) VEL: (-5 -1) ACT: (-1 1) COST: 1
+"
+ "POS: (9 101) VEL: (-4 0) ACT: (1 1) COST: 1
+"
+ "POS: (6 102) VEL: (-3 1) ACT: (1 1) COST: 1
+"
+ "POS: (4 104) VEL: (-2 2) ACT: (1 1) COST: 1
+"
+ "POS: (2 107) VEL: (-2 3) ACT: (0 1) COST: 1
+"
+ "POS: (1 111) VEL: (-1 4) ACT: (1 1) COST: 1
+"
+ "POS: (1 115) VEL: (0 4) ACT: (1 0) COST: 1
+"
+ "POS: (2 119) VEL: (1 4) ACT: (1 0) COST: 1
+"
+ "POS: (4 123) VEL: (2 4) ACT: (1 0) COST: 1
+"
+ "POS: (7 127) VEL: (3 4) ACT: (1 0) COST: 1
+"
+ "POS: (11 131) VEL: (4 4) ACT: (1 0) COST: 1
+"
+ "POS: (16 135) VEL: (5 4) ACT: (1 0) COST: 1
+"
+ "POS: (22 139) VEL: (6 4) ACT: (1 0) COST: 1
+"
+ "POS: (29 143) VEL: (7 4) ACT: (1 0) COST: 1
+"
+ "POS: (37 146) VEL: (8 3) ACT: (1 -1) COST: 1
+"
+ "POS: (45 148) VEL: (8 2) ACT: (0 -1) COST: 1
+"
+ "POS: (52 149) VEL: (7 1) ACT: (-1 -1) COST: 1
+"
+ "POS: (58 149) VEL: (6 0) ACT: (-1 -1) COST: 1
+"
+ "POS: (63 148) VEL: (5 -1) ACT: (-1 -1) COST: 1
+"
+ "POS: (67 146) VEL: (4 -2) ACT: (-1 -1) COST: 1
+"
+ "POS: (71 143) VEL: (4 -3) ACT: (0 -1) COST: 1
+"
+ "POS: (75 139) VEL: (4 -4) ACT: (0 -1) COST: 1
+"
+ "POS: (80 134) VEL: (5 -5) ACT: (1 -1) COST: 1
+"
+ "POS: (84 129) VEL: (4 -5) ACT: (-1 0) COST: -100

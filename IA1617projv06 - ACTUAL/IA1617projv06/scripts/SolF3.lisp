@@ -504,14 +504,13 @@
   (let* ( 
           (initpos (state-pos (problem-initial-state problem)))
           (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (make-heap)
-          )     
+          (openList (make-heap :size 0))     
         )
   (insertNode (make-node  :state (problem-initial-state problem)
                       :g 0
                       :h heur
                       :f heur) openList )
-  (print "11")
+  (print "loop")
   (loop while (not (equal (heap-size openList) 0))
     do (let*  ( (expansionNode (extractMin openList))
                 (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
@@ -616,7 +615,8 @@
       (setf (heap-nodes hip) (make-array 50 :fill-pointer 0 :adjustable t)))
   (vector-push-extend node (heap-nodes hip))
     (incf (heap-size hip))
-    (bubbleUp hip)
+    (print "fuck you")
+    (bubbleUp hip node)
   )
 
 

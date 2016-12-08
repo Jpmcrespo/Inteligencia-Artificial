@@ -1,0 +1,32 @@
+("POS: (8 16) VEL: (0 0) ACT: NIL COST: 0
+"
+ "POS: (7 15) VEL: (-1 -1) ACT: (-1 -1) COST: 1
+"
+ "POS: (6 15) VEL: (-1 0) ACT: (0 1) COST: 1
+"
+ "POS: (5 14) VEL: (-1 -1) ACT: (0 -1) COST: 1
+"
+ "POS: (5 12) VEL: (0 -2) ACT: (1 -1) COST: 1
+"
+ "POS: (5 9) VEL: (0 -3) ACT: (0 -1) COST: 1
+"
+ "POS: (5 7) VEL: (0 -2) ACT: (0 1) COST: 1
+"
+ "POS: (5 5) VEL: (0 -2) ACT: (0 0) COST: 1
+"
+ "POS: (4 4) VEL: (-1 -1) ACT: (-1 1) COST: 1
+"
+ "POS: (2 4) VEL: (-2 0) ACT: (-1 1) COST: 1
+"
+ "POS: (1 5) VEL: (-1 1) ACT: (1 1) COST: 1
+"
+ "POS: (1 7) VEL: (0 2) ACT: (1 1) COST: 1
+"
+ "POS: (1 10) VEL: (0 3) ACT: (0 1) COST: 1
+"
+ "POS: (1 14) VEL: (0 4) ACT: (0 1) COST: 1
+"
+ "POS: (1 18) VEL: (0 4) ACT: (0 0) COST: 1
+"
+ "POS: (1 21) VEL: (0 3) ACT: (0 -1) COST: -100
+")

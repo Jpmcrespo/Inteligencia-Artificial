@@ -302,6 +302,20 @@
 
 ;;; bestsearch
 
+(defun calcheur (pos v Hmap)
+(let* ( (vmax 0) 
+  (sum 0)
+  (counter 0)
+  (dist (nth (second pos) (nth (first pos) Hmap))))
+(if (> (first v) (second v)) (setf vmax (first v)) (setf vmax (second v)) )
+(loop while (> dist sum)
+  do(setf sum (+ sum vmax))
+  (incf vmax)
+  (incf counter)
+  )
+  counter
+))
+
 (defun bestsearch (problem)
   (let* ((Htrack (copy-structure (state-track (problem-initial-state problem))))
         (Hmap (track-env Htrack))) 
@@ -321,10 +335,36 @@
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
                 (pos (state-pos st8))
+                (vel (state-vel st8))
                 (h (nth (second pos) (nth (first pos) Hmap))))
             (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) 
               (insertNode (make-node :parent expansionNode :state st8 :g g :h h :f (+ g h) ) openList))))))
   (return-from bestsearch nil))))
+
+(defun bestsearch2 (problem)
+  (let* ((Htrack (copy-structure (state-track (problem-initial-state problem))))
+        (Hmap (track-env Htrack))) 
+  (fillmap2 Htrack)
+  (let* ( (initpos (state-pos (problem-initial-state problem)))
+          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
+          (openList (make-heap :size 0)))
+  (insertNode (make-node  :state (problem-initial-state problem) :g 0 :h heur :f heur) openList )
+  (loop while (not (equal (heap-size openList) 0))
+    do (let*  ( (expansionNode (extractMin openList))
+                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode))))
+      ;;(print (state-pos (node-state expansionNode)))
+      ;;(print (heap-size openList))
+      ;(print openList)
+      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
+        (return-from bestsearch2 (solution expansionNode)))
+      (dolist (st8 nextSt)
+        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
+                (pos (state-pos st8))
+                (vel (state-vel st8))
+                (h (calcheur pos vel Hmap)))
+            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) 
+              (insertNode (make-node :parent expansionNode :state st8 :g g :h h :f (+ g h) ) openList))))))
+  (return-from bestsearch2 nil))))
 
 
 

@@ -337,7 +337,8 @@
                 (pos (state-pos st8))
                 (vel (state-vel st8))
                 (h (nth (second pos) (nth (first pos) Hmap))))
-            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) 
+              (when (and (not (null (nth (second pos) (nth (first pos) Hmap)) )) (not (pos-equal pos (state-pos (node-state expansionNode)) )))
+              ;(when (not (null (nth (second pos) (nth (first pos) Hmap)) )) 
               (insertNode (make-node :parent expansionNode :state st8 :g g :h h :f (+ g h) ) openList))))))
   (return-from bestsearch nil))))
 
@@ -352,7 +353,7 @@
   (loop while (not (equal (heap-size openList) 0))
     do (let*  ( (expansionNode (extractMin openList))
                 (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode))))
-      ;;(print (state-pos (node-state expansionNode)))
+      (print (state-pos (node-state expansionNode)))
       ;;(print (heap-size openList))
       ;(print openList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
@@ -387,13 +388,27 @@
 
 
 (defun heapKeyValue (hip pos) (node-f (aref (heap-nodes hip) pos)))
+(defun heapHValue (hip pos) (node-h (aref (heap-nodes hip) pos)))
+(defun heapGValue (hip pos) (node-g (aref (heap-nodes hip) pos)))
 (defun heapParent (pos)  (floor (/ (1- pos) 2)))
 
 (defun bubbleUp (hip node)
   (let ((pos (1- (heap-size hip))))
-  (loop while (and (> pos 0) (>= (heapKeyValue hip (heapParent pos))  (node-f node)))
+  (loop while (and (> pos 0) (> (heapKeyValue hip (heapParent pos))  (node-f node)))
     do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (heapParent pos))
        pos (heapParent pos)) )
+
+  ; (loop while (and (> pos 0) (= (heapKeyValue hip (heapParent pos))  (node-f node))  (> (heapHValue hip (heapParent pos))  (node-h node))  )
+  ;   do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (heapParent pos))
+  ;      pos (heapParent pos)) )
+
+  (loop while (and  (> pos 0) (= (heapKeyValue hip (heapParent pos))  (node-f node))  
+                    (> (heapHValue hip (heapParent pos))  (node-h node)) 
+                    ;(> (heapGValue hip (heapParent pos))  (node-g node))  
+                    )
+    do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (heapParent pos))
+       pos (heapParent pos)) )
+
   (setf (aref  (heap-nodes hip) pos) node)))
 
 (defun extractMin (hip)

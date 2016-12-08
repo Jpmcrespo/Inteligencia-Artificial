@@ -301,499 +301,78 @@
 
 
 ;;; bestsearch
+
 (defun bestsearch (problem)
-  (let((Htrack (copy-structure (state-track (problem-initial-state problem))))) 
-
+  (let* ((Htrack (copy-structure (state-track (problem-initial-state problem))))
+        (Hmap (track-env Htrack))) 
   (fillmap2 Htrack)
-
-  (let* ( 
-          (Hmap (track-env Htrack))
-
-          (initpos (state-pos (problem-initial-state problem)))
+  (let* ( (initpos (state-pos (problem-initial-state problem)))
           (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (list (make-node  :state (problem-initial-state problem)
-                      :g 0
-                      :h heur
-                      :f heur
-                      )
-                  )
-          )
-          (closedList '())
-          
-        )
-  (print "1")
-  (loop while (not (eq (list-length openList) 0))
-    do (let*  ( (expansionNode (findLowestF openList))
-                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
-              )
-      (setf openList (remove expansionNode openList))
-      (push expansionNode closedList)
-      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (print "bem campeaao")
-        (return-from bestsearch (solution expansionNode))
-        )
-      (dolist (st8 nextSt)
-        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (pos (state-pos st8))
-                (h (nth (second pos) (nth (first pos) Hmap)))
-                (successor (make-node  
-                      :parent expansionNode
-                      :state st8
-                      :g g
-                      :h h
-                      :f (+ g h)
-                      ))
-                (flag nil)
-                )
-            (dolist (oldNode (append openList closedList))
-              (when (equal (state-pos (node-state oldNode)) (state-pos (node-state successor)))
-                (setf flag t) (return))
-              )
-            (when (not flag) (push successor openList))  
-          )
-        )
-
-      )
-
-  )
-  (return-from bestsearch nil)
-)
-)
-)
-
-
-
-
-(defun bestsearch2 (problem)
-  (let((Htrack (copy-structure (state-track (problem-initial-state problem))))) 
-
-  (fillmap2 Htrack)
-  (let* ( (Hmap (track-env Htrack))
-
-          (initpos (state-pos (problem-initial-state problem)))
-          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (list (make-node  :state (problem-initial-state problem)
-                      :g 0
-                      :h heur
-                      :f heur
-                      )
-                  )
-          )
-        )
-  (loop while (not (eq (list-length openList) 0))
-    do (let*  ( (expansionNode (findLowestF openList))
-                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
-              )
-      (setf openList (remove expansionNode openList))
-      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from bestsearch2 (solution expansionNode))
-        )
-      (dolist (st8 nextSt)
-        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (pos (state-pos st8))
-                (h (nth (second pos) (nth (first pos) Hmap)))
-                (successor (make-node  
-                      :parent expansionNode
-                      :state st8
-                      :g g
-                      :h h
-                      :f (+ g h)
-                      ))
-                )
-            
-            (push successor openList)  
-          )
-        )
-
-      )
-
-  )
-  (return-from bestsearch2 nil)
-)
-))
-
-
-(defun bestsearch3 (problem)
-  (let*((Htrack (copy-structure (state-track (problem-initial-state problem))))
-        (Hmap (track-env Htrack))
-        
-
-    ) 
-  (fillmap2 Htrack)
-  (let* ( 
-          (initpos (state-pos (problem-initial-state problem)))
-          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (list (make-node  :state (problem-initial-state problem)
-                      :g 0
-                      :h heur
-                      :f heur
-                      )
-                  )
-          )     
-        )
-  (print "1")
-  (loop while (not (eq (list-length openList) 0))
-    do (let*  ( (expansionNode (findLowestF openList))
-                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
-              )
-      (setf openList (remove expansionNode openList))
-      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from bestsearch3 (solution expansionNode))
-        )
-      (dolist (st8 nextSt)
-        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (pos (state-pos st8))
-                (h (nth (second pos) (nth (first pos) Hmap)))
-                )
-            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) (push (make-node  
-                      :parent expansionNode
-                      :state st8
-                      :g g
-                      :h h
-                      :f (+ g h)
-                      ) openList)
-            )
-          )
-        )
-
-      )
-
-  )
-  (print "hi")
-  (return-from bestsearch3 nil)
-)
-)
-)
-
-
-
-
-(defun findLowestF (lista)
-
-  (let* ( (minimumF most-positive-fixnum)
-          (finalNode nil)
-          (listaF '())
-        )
-  (dolist (el lista)
-    (setf listaF (append (list (node-f el)) listaF))
-    (when (< (node-f el) minimumF) 
-        (setf minimumF (node-f el))
-        (setf finalNode el)
-      )
-    )
-  ;;;(print minimumF)
-  ;;;(print (state-pos (node-state finalNode)))
-  ;;;(print (state-vel (node-state finalNode)))
-  ;;(print listaF)
-  ;;(print minimumF)
-  (return-from findLowestF finalNode)
-)
-)
-
-
-
-
-
-(defun bestsearchHEAP (problem)
-  (let*((Htrack (copy-structure (state-track (problem-initial-state problem))))
-        (Hmap (track-env Htrack))
-        
-
-    ) 
-  (fillmap2 Htrack)
-  (let* ( 
-          (initpos (state-pos (problem-initial-state problem)))
-          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (make-heap :size 0))     
-        )
-  (insertNode (make-node  :state (problem-initial-state problem)
-                      :g 0
-                      :h heur
-                      :f heur) openList )
-  (print "loop")
+          (openList (make-heap :size 0)))
+  (insertNode (make-node  :state (problem-initial-state problem) :g 0 :h heur :f heur) openList )
   (loop while (not (equal (heap-size openList) 0))
     do (let*  ( (expansionNode (extractMin openList))
-                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
-              )
+                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode))))
       ;;(print (state-pos (node-state expansionNode)))
+      ;;(print (heap-size openList))
+      ;(print openList)
       (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from bestsearchHEAP (solution expansionNode))
-        )
+        (return-from bestsearch (solution expansionNode)))
       (dolist (st8 nextSt)
         (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
                 (pos (state-pos st8))
-                (h (nth (second pos) (nth (first pos) Hmap)))
-                )
-            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) (insertNode (make-node  
-                      :parent expansionNode
-                      :state st8
-                      :g g
-                      :h h
-                      :f (+ g h)
-                      ) openList)
-            )
-          )
-        )
-
-      )
-
-  )
-  (print "hi")
-  (return-from bestsearchHEAP nil)
-)
-)
-)
+                (h (nth (second pos) (nth (first pos) Hmap))))
+            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) 
+              (insertNode (make-node :parent expansionNode :state st8 :g g :h h :f (+ g h) ) openList))))))
+  (return-from bestsearch nil))))
 
 
 
 
-(defun bestsearchQ (problem)
-  (let*((Htrack (copy-structure (state-track (problem-initial-state problem))))
-        (Hmap (track-env Htrack))
-        
-
-    ) 
-  (fillmap2 Htrack)
-  (let* ( 
-          (initpos (state-pos (problem-initial-state problem)))
-          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
-          (openList (make-q 
-                  )
-          )     
-        )
-  (enqueue-by-priority openList (make-node  :state (problem-initial-state problem)
-                      :g 0
-                      :h heur
-                      :f heur
-                      ) (q-key openList))
-  ;;(print openList)
-  ;;kjahsdkhasd
-  (loop while (not (empty-queue? openList))
-    do (let*  ( (expansionNode (remove-front openList))
-                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
-              )
-      ;;(print (state-pos (node-state expansionNode)))
-      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
-        (return-from bestsearchQ (solution expansionNode))
-        )
-      (dolist (st8 nextSt)
-        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
-                (pos (state-pos st8))
-                (h (nth (second pos) (nth (first pos) Hmap)))
-                )
-            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) (enqueue-by-priority openList (make-node  
-                      :parent expansionNode
-                      :state st8
-                      :g g
-                      :h h
-                      :f (+ g h)
-                      ) (q-key openList) )
-            )
-          )
-        )
-
-      )
-
-  )
-  (print "hi")
-  (return-from bestsearchQ nil)
-)
-)
-)
-
-
-
-
-
-(defstruct heap 
+(defstruct heap
    nodes
    size)
 
 
 (defun insertNode (node hip)
+
   (when (null (heap-nodes hip))
       (setf (heap-nodes hip) (make-array 50 :fill-pointer 0 :adjustable t)))
-  (vector-push-extend node (heap-nodes hip))
-    (incf (heap-size hip))
-    (print "fuck you")
-    (bubbleUp hip node)
+  (vector-push-extend nil (heap-nodes hip))
+  (incf (heap-size hip))
+  (bubbleUp hip node)
+
   )
 
+
+
+(defun heapKeyValue (hip pos) (node-f (aref (heap-nodes hip) pos)))
+(defun heapParent (pos)  (floor (/ (1- pos) 2)))
 
 (defun bubbleUp (hip node)
   (let ((pos (1- (heap-size hip))))
-  (loop while (and (> pos 0) (>= (node-f (aref (heap-nodes hip) (/ pos 2)))  (node-f (aref pos (heap-nodes hip)))))
-    do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (/ pos 2)))
-      (setf pos (/ pos 2))
-      
-  )
-  (setf (aref pos (heap-nodes hip)) node)
-)
-)
+  (loop while (and (> pos 0) (>= (heapKeyValue hip (heapParent pos))  (node-f node)))
+    do (setf (aref (heap-nodes hip) pos) (aref (heap-nodes hip) (heapParent pos))
+       pos (heapParent pos)) )
+  (setf (aref  (heap-nodes hip) pos) node)))
 
 (defun extractMin (hip)
+  
   (let ((result (aref (heap-nodes hip) 0 )))
-  (setf (aref (heap-nodes hip) 0) (aref (heap-nodes hip) (1- (heap-size hip))  )  )
+  (setf (aref (heap-nodes hip) 0) (aref (heap-nodes hip) (1- (heap-size hip))))
   (decf (fill-pointer (heap-nodes hip)))
   (decf (heap-size hip) )
   (sinkdown 0 hip)
-  (result)
-
-  )
-  )
+  result))
 
 (defun sinkdown (pos hip)
-  (let ((minChild))
-  (if (> (node-f (aref (heap-nodes hip) (* pos 2))) (node-f (aref (heap-nodes hip) (1+ (* pos 2)))) ) 
-    (setf minChild (1+ (* pos 2)))
-    (setf minChild (* pos 2)) 
-    )
-  (when (> (node-f (aref (heap-nodes hip) pos)) (node-f (aref (heap-nodes hip) minChild) ) )
-    (let ((y (aref (heap-nodes hip) pos)))
-      (setf   (aref (heap-nodes hip) pos)  (aref (heap-nodes hip) minChild)  )
-      (setf   (aref  (heap-nodes hip) minChild) y)
-      )
-    (sinkdown minChild hip)
-    )
-
-  )
-)
-
-
-
-
-
-;;; -*- Mode: Lisp; Syntax: Common-Lisp; -*- File: utilities/queue.lisp
-
-;;;; The Queue datatype
-
-;;; We can remove elements form the front of a queue.  We can add elements in
-;;; three ways: to the front, to the back, or ordered by some numeric score.
-;;; This is done with the following enqueing functions, which make use of the
-;;; following implementations of the elements:
-;;;   ENQUEUE-AT-FRONT - elements are a list
-;;;   ENQUEUE-AT-END   - elements are a list, with a pointer to end
-;;;   ENQUEUE-BY-PRIORITY - elements are a heap, implemented as an array
-;;; The best element in the queue is always in position 0.
-
-;;; The heap implementation is taken from "Introduction to Algorithms" by
-;;; Cormen, Lieserson & Rivest [CL&R], Chapter 7.  We could certainly speed
-;;; up the constant factors of this implementation.  It is meant to be clear
-;;; and simple and O(log n), but not super efficient.  Consider a Fibonacci
-;;; heap [Page 420 CL&R] if you really have large queues to deal with.
-
-(defstruct q
-  (key #'identity)
-  (last nil)
-  (elements nil))
-
-;;;; Basic Operations on Queues
-
-(defun make-empty-queue () (make-q))
-
-(defun empty-queue? (q)
-  "Are there no elements in the queue?"
-  (= (length (q-elements q)) 0))
-
-(defun queue-front (q)
-  "Return the element at the front of the queue."
-  (elt (q-elements q) 0))
-
-(defun remove-front (q)
-  "Remove the element from the front of the queue and return it."
-  (if (listp (q-elements q))
-      (pop (q-elements q))
-    (heap-extract-min (q-elements q) (q-key q))))
-
-;;;; The Three Enqueing Functions
-
-(defun enqueue-at-front (q items)
-  "Add a list of items to the front of the queue."
-  (setf (q-elements q) (nconc items (q-elements q))))
-
-(defun enqueue-at-end (q items)
-  "Add a list of items to the end of the queue."
-  ;; To make this more efficient, keep a pointer to the last cons in the queue
-  (cond ((null items) nil)
-  ((or (null (q-last q)) (null (q-elements q)))
-   (setf (q-last q) (last items)
-         (q-elements q) (nconc (q-elements q) items)))
-  (t (setf (cdr (q-last q)) items
-     (q-last q) (last items)))))
-
-(defun enqueue-by-priority (q items key)
-  "Insert the items by priority according to the key function."
-  ;; First make sure the queue is in a consistent state
-  (setf (q-key q) key)
-  (when (null (q-elements q))
-    (setf (q-elements q) (make-heap)))
-  ;; Now insert the items
-    (heap-insert (q-elements q) items key))
-
-;;;; The Heap Implementation of Priority Queues
-
-;;; The idea is to store a heap in an array so that the heap property is
-;;; maintained for all elements: heap[Parent(i)] <= heap[i].  Note that we
-;;; start at index 0, not 1, and that we put the lowest value at the top of
-;;; the heap, not the highest value.
-
-;; These could be made inline
-
-(defun heap-val (heap i key) (declare (fixnum i)) (funcall key (aref heap i)))
-(defun heap-parent (i) (declare (fixnum i)) (floor (- i 1) 2))
-(defun heap-left (i) (declare (fixnum i)) (the fixnum (+ 1 i i)))
-(defun heap-right (i) (declare (fixnum i)) (the fixnum (+ 2 i i)))
-
-(defun heapify (heap i key)
-  
-  (let ((l (heap-left i))
-  (r (heap-right i))
-  (N (- (length heap) 1))
-  smallest)
-    (setf smallest (if (and (<= l N) (<= (heap-val heap l key)
-           (heap-val heap i key)))
-           l i))
-    (if (and (<= r N) (<= (heap-val heap r key) (heap-val heap smallest key)))
-  (setf smallest r))
-    (when (/= smallest i)
-      (rotatef (aref heap i) (aref heap smallest))
-      (heapify heap smallest key))))
-
-(defun heap-extract-min (heap key)
-  "Pop the best (lowest valued) item off the heap. [Page 150 CL&R]."
-  (let ((min (aref heap 0)))
-    (setf (aref heap 0) (aref heap (- (length heap) 1)))
-    (decf (fill-pointer heap))
-    (heapify heap 0 key)
-    min))
-
-;;(heap-insert (q-elements q) items key))
-(defun heap-insert (heap item key)
-  "Put an item into a heap. [Page 150 CL&R]."
-  ;; Note that ITEM is the value to be inserted, and KEY is a function
-  ;; that extracts the numeric value from the item.
-  (vector-push-extend nil heap)
-  (let ((i (- (length heap) 1))
-  (val (funcall key item)))
-    (loop while (and (> i 0) (>= (heap-val heap (heap-parent i) key) val))
-      do (setf (aref heap i) (aref heap (heap-parent i))
-         i (heap-parent i)))
-    (setf (aref heap i) item)))
-
-;;(defun make-heap (&optional (size 100))
-  ;;(make-array size :fill-pointer 0 :adjustable t))
-
-(defun heap-sort (numbers &key (key #'identity))
-  "Return a sorted list, with elements that are < according to key first."
-  ;; Mostly for testing the heap implementation
-  ;; There are more efficient ways of sorting (even of heap-sorting)
-  (let ((heap (make-heap))
-  (result nil))
-    (for each n in numbers do (heap-insert heap n key))
-    (loop while (> (length heap) 0) do (push (heap-extract-min heap key) result))
-    (nreverse result)))
-
-
-
-(defun identity (item)
-  (return-from identity (node-f item)))
+  (let ((l (1+ (* pos 2)))
+        (r (+ 2 (* pos 2)))
+        (largest pos))
+    (when (and (<= l (heap-size hip)) (<= (heapKeyValue hip l) (heapKeyValue hip largest)))
+      (setf largest l))
+    (when (and (<= r (heap-size hip)) (<= (heapKeyValue hip r) (heapKeyValue hip largest)))
+      (setf largest r))
+    (when (not (equal largest pos))
+      (rotatef (aref (heap-nodes hip) pos) (aref (heap-nodes hip) largest))
+      (sinkdown largest hip))))

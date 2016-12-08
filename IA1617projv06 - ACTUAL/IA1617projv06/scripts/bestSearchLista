@@ -1,0 +1,77 @@
+(defun bestsearch3 (problem)
+  (let*((Htrack (copy-structure (state-track (problem-initial-state problem))))
+        (Hmap (track-env Htrack))
+        
+
+    ) 
+  (fillmap2 Htrack)
+  (let* ( 
+          (initpos (state-pos (problem-initial-state problem)))
+          (heur (nth (second initpos) (nth (first initpos) Hmap)) )
+          (openList (list (make-node  :state (problem-initial-state problem)
+                      :g 0
+                      :h heur
+                      :f heur
+                      )
+                  )
+          )     
+        )
+  (print "1")
+  (loop while (not (eq (list-length openList) 0))
+    do (let*  ( (expansionNode (findLowestF openList))
+                (nextSt (funcall(problem-fn-nextStates problem) (node-state expansionNode)))
+              )
+      (setf openList (remove expansionNode openList))
+      (when (funcall(problem-fn-isGoal problem) (node-state expansionNode))
+        (return-from bestsearch3 (solution expansionNode))
+        )
+      (dolist (st8 nextSt)
+        (let* ( (g (+ (node-g expansionNode) (state-cost st8)))
+                (pos (state-pos st8))
+                (h (nth (second pos) (nth (first pos) Hmap)))
+                )
+            (when (not (null (nth (second pos) (nth (first pos) Hmap)) )) (push (make-node  
+                      :parent expansionNode
+                      :state st8
+                      :g g
+                      :h h
+                      :f (+ g h)
+                      ) openList)
+            )
+          )
+        )
+
+      )
+
+  )
+  (print "hi")
+  (return-from bestsearch3 nil)
+)
+)
+)
+
+
+
+
+(defun findLowestF (lista)
+
+  (let* ( (minimumF most-positive-fixnum)
+          (finalNode nil)
+          (listaF '())
+        )
+  (dolist (el lista)
+    (setf listaF (append (list (node-f el)) listaF))
+    (when (< (node-f el) minimumF) 
+        (setf minimumF (node-f el))
+        (setf finalNode el)
+      )
+    )
+  ;;;(print minimumF)
+  ;;;(print (state-pos (node-state finalNode)))
+  ;;;(print (state-vel (node-state finalNode)))
+  ;;(print listaF)
+  ;;(print minimumF)
+  (return-from findLowestF finalNode)
+)
+)
+
